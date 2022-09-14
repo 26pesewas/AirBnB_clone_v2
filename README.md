@@ -157,6 +157,5 @@ No known bugs at this time.
 Olumide Micheal - [Github](https://github.com/codewithmide) / [Twitter](https://twitter.com/OlumideMicheal_)  
 Jennifer Huang - [Github](https://github.com/jhuang10123) / [Twitter](https://twitter.com/earthtojhuang)
 
-Second part of Airbnb: Joann Vuong
 ## License
 Public Domain. No copy write protection. 
