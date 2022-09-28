@@ -10,13 +10,15 @@ from os.path import isdir
 
 
 def do_pack():
-    """generates a tgz archive"""
-    try:
-        date = datetime.now().strftime("%Y%m%d%H%M%S")
-        if isdir("versions") is False:
-            local("mkdir versions")
-        file_name = "versions/web_static_{}.tgz".format(date)
-        local("tar -cvzf {} web_static".format(file_name))
-        return file_name
-    except:
+    """
+    All archives must be stored in the folder versions
+    (your function should create this folder if it doesn’t exist)
+    """
+    local("mkdir -p versions")
+    status = local("tar -cvzf versions/web_static_{}.tgz web_static"
+                   .format(datetime.strftime(datetime.now(), "%Y%m%d%H%M%S")),
+                   capture=True)
+    if status.failed:
         return None
+    print(status)
+    return status
