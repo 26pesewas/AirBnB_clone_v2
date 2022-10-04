@@ -46,15 +46,15 @@ def do_deploy(archive_path):
         no_tgz_name = path_split[1]
         full_filename = path_split[1] + '.' + path_split[2]
         folder = '/data/web_static/releases/{}/'.format(no_tgz_name)
-        put(archive_path, '/tmp/')
-        run('mkdir -p {}'.format(folder))
-        run('tar -xzf /tmp/{} -C {}/'.format(full_filename, folder))
-        run('rm /tmp/{}'.format(full_filename))
-        run('mv {}/web_static/* {}'.format(folder, folder))
-        run('rm -rf {}/web_static'.format(folder))
+        sudo(put(archive_path, '/tmp/'))
+        sudo(run('mkdir -p {}'.format(folder)))
+        sudo(run('tar -xzf /tmp/{} -C {}/'.format(full_filename, folder)))
+        sudo(run('rm /tmp/{}'.format(full_filename)))
+        sudo(run('mv {}/web_static/* {}'.format(folder, folder)))
+        sudo(run('rm -rf {}/web_static'.format(folder)))
         current = '/data/web_static/current'
-        run('rm -rf {}'.format(current))
-        run('ln -s {}/ {}'.format(folder, current))
+        sudo(run('rm -rf {}'.format(current)))
+        sudo(run('ln -s {}/ {}'.format(folder, current)))
         return True
     except Exception:
         return False
