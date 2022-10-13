@@ -36,7 +36,7 @@ def int_validator(n):
 @app.route('/number_template/<int:n>', strict_slashes=False)
 def html_int_validator(n):
     """detects if the entered argument is a number. if yes return an html page"""
-    return render_template('5-number.html', n=int)
+    return render_template('5-number.html', n=n)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
