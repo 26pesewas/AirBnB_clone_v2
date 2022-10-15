@@ -16,6 +16,7 @@ def close_db(error):
     """
     storage.close()
 
+
 @app.route('/states_list', strict_slashes=False)
 def list_states():
     """
