@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """
-starts a Flask web application
+Starting my first Flask web application
 """
-
-from flask import Flask, render_template
-from models import *
 from models import storage
+from models.state import State
+from os import environ
+from flask import Flask, render_template
 app = Flask(__name__)
 
 
@@ -21,5 +21,7 @@ def teardown_db(exception):
     """closes the storage on teardown"""
     storage.close()
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
+
+if __name__ == "__main__":
+    """ Main Function """
+    app.run(host='0.0.0.0', port=5000, debug=True)
