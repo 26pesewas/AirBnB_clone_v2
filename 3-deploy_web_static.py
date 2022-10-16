@@ -1,68 +1,68 @@
-#!/usr/bin/python3
-"""
-Fabric script based on the file 2-do_deploy_web_static.py that creates and
-distributes an archive to the web servers
-"""
-from fabric.context_managers import cd, hide,\
-        settings, show, path, prefix, lcd, quiet, warn_only,\
-        remote_tunnel, shell_env
-from fabric.decorators import hosts, roles,\
-        runs_once, with_settings, task, serial, parallel
-from fabric.operations import require, prompt,\
-        put, get, run, sudo, local, reboot, open_shell
-from fabric.state import env, output
-from fabric.utils import abort, warn, puts, fastprint
-from fabric.tasks import execute
+""" Write a Fabric script (based on the file
+ 2-do_deploy_web_static.py) that creates and distributes
+  an archive to your web servers, using the function
+   deploy"""
+from fabric.api import local, env, run, put
 from datetime import datetime
-import os
+from os.path import exists
 
 env.hosts = ["44.200.178.214", "35.174.60.115"]
-env.user = 'ubuntu'
-
 
 def do_pack():
-    """ function generates a tgz archive from the contents of
-    the web_static folder of the AirBnB clone
-    """
-    try:
-        my_time = datetime.now().strftime('%Y%m%d%H%M%S')
-        local("mkdir -p versions")
-        my_file = 'versions/web_static_' + my_time + '.tgz'
-        local('tar -vzcf {} web_static'.format(my_file))
-        return (my_file)
-    except Exception:
-        return None
+    """[summary]"""
+    local('mkdir -p versions')
+    tar_dir = local("tar -czvf versions/web_static_{}.tgz web_static/".format((
+        datetime.strftime(datetime.now(), "%Y%m%d%H%M%S"))), capture=True)
+
+    if tar_dir.succeeded:
+        return tar_dir
+    return None
 
 
 def do_deploy(archive_path):
-    """ function distributes an archive to my web servers
-    """
-    path_existence = os.path.exists(archive_path)
-    if path_existence is False:
-        return False
-    try:
-        path_split = archive_path.replace('/', ' ').replace('.', ' ').split()
-        just_directory = path_split[0]
-        no_tgz_name = path_split[1]
-        full_filename = path_split[1] + '.' + path_split[2]
-        folder = '/data/web_static/releases/{}/'.format(no_tgz_name)
-        sudo(put(archive_path, '/tmp/'))
-        sudo(run('mkdir -p {}'.format(folder)))
-        sudo(run('tar -xzf /tmp/{} -C {}/'.format(full_filename, folder)))
-        sudo(run('rm /tmp/{}'.format(full_filename)))
-        sudo(run('mv {}/web_static/* {}'.format(folder, folder)))
-        sudo(run('rm -rf {}/web_static'.format(folder)))
-        current = '/data/web_static/current'
-        sudo(run('rm -rf {}'.format(current)))
-        sudo(run('ln -s {}/ {}'.format(folder, current)))
+    """[summary]"""
+    # Returns False if the file at the path archive_path doesn’t exist
+    if exists(archive_path):
+        # archive_path = versions/web_static_#####.tgz
+        # file_path = web_static_#####.tgz
+        file_path = archive_path.split("/")[1]
+        # serv_path = /data/web_static/releases/web_static_#####
+        serv_path = "/data/web_static/releases/{}".format(
+            file_path.replace(".tgz", ""))
+        # Upload the archive to the /tmp/ directory of the web server
+        put('{}'.format(archive_path), '/tmp/')
+        # ???
+        run('mkdir -p {}'.format(serv_path))
+        # Uncompress the archive to the folde <..> on the web server
+        run('tar -xzf /tmp/{} -C {}/'.format(
+            file_path,
+            serv_path))
+        # Delete the archive from the web server
+        run('rm /tmp/{}'.format(file_path))
+        # ???
+        run('mv -f {}/web_static/* {}/'.format(serv_path, serv_path))
+        # Delete the symbolic link <..> from the web server
+        run('rm -rf {}/web_static'.format(
+            serv_path))
+        # ??
+        run('rm -rf /data/web_static/current')
+        # run('unlink /data/web_static/current')
+        # Create a new Symbolic link, linked to the new version of your code
+        run('ln -s {} /data/web_static/current'.format(
+            serv_path))
+        # Retur  True if all operations have been done correctly
         return True
-    except Exception:
+    else:
         return False
 
 
 def deploy():
-    """creates and distributes an archive to the web servers"""
-    archive_path = do_pack()
-    if archive_path is None:
+    """ Summary """
+    archive = do_pack()
+    if archive is None:
         return False
-    return do_deploy(archive_path)
+    else:
+        value = archive.__dict__["command"].split(" ")[-2]
+        print(value)
+        return do_deploy(value)
+"2-do_deploy_web_static.py" 68L, 2342C                                                                                                                            68,1          Bot
